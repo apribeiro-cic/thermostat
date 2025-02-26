@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(thermostat thermostat.c )
+add_executable(thermostat thermostat.c lib/ssd1306.c)
 
 pico_set_program_name(thermostat "thermostat")
 pico_set_program_version(thermostat "0.1")
@@ -44,9 +44,15 @@ pico_set_program_version(thermostat "0.1")
 pico_enable_stdio_uart(thermostat 1)
 pico_enable_stdio_usb(thermostat 1)
 
+pico_generate_pio_header(thermostat ${CMAKE_CURRENT_LIST_DIR}/thermostat.pio)
+
+target_sources(thermostat PRIVATE thermostat.c)
+
 # Add the standard library to the build
 target_link_libraries(thermostat
-        pico_stdlib)
+        pico_stdlib
+        hardware_pio
+        )
 
 # Add the standard include files to the build
 target_include_directories(thermostat PRIVATE
@@ -55,7 +61,9 @@ target_include_directories(thermostat PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(thermostat 
-        
+        hardware_adc
+        hardware_i2c
+        hardware_pwm
         )
 
 pico_add_extra_outputs(thermostat)
